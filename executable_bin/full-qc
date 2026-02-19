@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+set -u
+
+usage() {
+  cat <<'EOF'
+Run all QC jobs across modules without early exit, then build/copy a report.
+
+Usage:
+  full-qc --job "<command>" [--job "<command>" ...] [--module <path> ...]
+  full-qc --job "<command>" [--job "<command>" ...] -- <module> [module ...]
+
+Examples:
+  full-qc --job "npm run lint" --job "npm test" --module api --module web
+  full-qc --job "go test ./..." --job "golangci-lint run" -- ./cmd ./pkg
+EOF
+}
+
+copy_to_clipboard() {
+  if command -v pbcopy >/dev/null 2>&1; then
+    pbcopy
+    return 0
+  fi
+  if command -v wl-copy >/dev/null 2>&1; then
+    wl-copy
+    return 0
+  fi
+  if command -v xclip >/dev/null 2>&1; then
+    xclip -selection clipboard
+    return 0
+  fi
+  if command -v xsel >/dev/null 2>&1; then
+    xsel --clipboard --input
+    return 0
+  fi
+  return 1
+}
+
+jobs=()
+modules=()
+parsing_modules=false
+
+while (($# > 0)); do
+  if $parsing_modules; then
+    modules+=("$1")
+    shift
+    continue
+  fi
+  case "$1" in
+    --job)
+      shift
+      [[ $# -gt 0 ]] || { echo "Missing value for --job" >&2; exit 2; }
+      jobs+=("$1")
+      shift
+      ;;
+    --module)
+      shift
+      [[ $# -gt 0 ]] || { echo "Missing value for --module" >&2; exit 2; }
+      modules+=("$1")
+      shift
+      ;;
+    --)
+      parsing_modules=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if ((${#jobs[@]} == 0)); then
+  echo "At least one --job is required." >&2
+  usage >&2
+  exit 2
+fi
+
+if ((${#modules[@]} == 0)); then
+  modules=(".")
+fi
+
+timestamp="$(date +%Y%m%d-%H%M%S)"
+report_file="/tmp/full-qc-report-${timestamp}.txt"
+run_root="/tmp/full-qc-run-${timestamp}"
+mkdir -p "${run_root}"
+
+total=0
+failed=0
+pass_lines=()
+fail_lines=()
+
+for module in "${modules[@]}"; do
+  for i in "${!jobs[@]}"; do
+    job="${jobs[$i]}"
+    total=$((total + 1))
+    logfile="${run_root}/$(printf '%03d' "$total").log"
+
+    if (cd "$module" && bash -lc "$job") >"$logfile" 2>&1; then
+      pass_lines+=("PASS | ${module} | ${job}")
+    else
+      failed=$((failed + 1))
+      fail_lines+=("FAIL | ${module} | ${job} | log: ${logfile}")
+    fi
+  done
+done
+
+{
+  echo "Full QC Report"
+  echo "Generated: $(date -Iseconds)"
+  echo "Total jobs: ${total}"
+  echo "Failed: ${failed}"
+  echo
+
+  echo "Passes:"
+  if ((${#pass_lines[@]} == 0)); then
+    echo "  (none)"
+  else
+    printf '  %s\n' "${pass_lines[@]}"
+  fi
+  echo
+
+  echo "Failures:"
+  if ((${#fail_lines[@]} == 0)); then
+    echo "  (none)"
+  else
+    printf '  %s\n' "${fail_lines[@]}"
+  fi
+  echo
+
+  if ((${#fail_lines[@]} > 0)); then
+    echo "Failure log tails (last 40 lines):"
+    for line in "${fail_lines[@]}"; do
+      log_path="${line##*log: }"
+      echo
+      echo "---- ${line} ----"
+      tail -n 40 "${log_path}" || true
+    done
+  fi
+} >"${report_file}"
+
+cat "${report_file}"
+
+if copy_to_clipboard <"${report_file}"; then
+  echo
+  echo "Report copied to clipboard."
+else
+  echo
+  echo "No clipboard utility found (tried pbcopy/wl-copy/xclip/xsel)."
+fi
+
+echo "Report saved to: ${report_file}"
+
+if ((failed > 0)); then
+  exit 1
+fi
+
+exit 0
