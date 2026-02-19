@@ -48,7 +48,6 @@ alias gitlg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Crese
 alias gtn='git tag $(svu next)'
 
 alias cat='bat -p'
-alias ghe='GH_HOST=bits.linode.com gh'
 # add ssh key to something, don't need to re-auth ssh key each time
 # alias sshkey='ssh-add -K ~/.ssh/id_rsa'
 
@@ -76,17 +75,6 @@ export TELEPORT_ADD_KEYS_TO_AGENT=no
 # kubectl auto complete
 [[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
 
-### Linode-specific ###
-
-# hss for scping files
-alias pcs='scp -S hss'
-
-# for ssh-wrapper
-export HSS_COMMAND=ssh-wrapper
-
-# eng vm
-alias sshengvm="ssh -A bos-lhvr0c.bos01.corp.akamai.com"
-
 ### ENVIRONMENT VARS ###
 
 export KUBE_EDITOR=/usr/bin/vim
@@ -98,8 +86,6 @@ export EDITOR=$VISUAL
 export PATH="/home/wbollock/.cargo/bin/:$PATH"
 # pip PATH
 export PATH="$HOME/.local/bin:$PATH"
-# hss path for linode_gear_info
-export PATH="$HOME/repos/forks/hss-config/:$PATH"
 # path for krew
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 # kind using podman
@@ -119,14 +105,10 @@ source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
 export GEM_HOME="${HOME}/.gem/ruby/$(ruby --version | sed -E 's/^.* ([0-9]+\.[0-9]+)\..*$/\1.0/')"
 export PATH=${PATH}:${GEM_HOME}/bin
 
-# vault
-export VAULT_ADDR=https://vault.linode.com:8200
-
 # loki certs
 #
 export LOKI_CLIENT_CERT_PATH=/home/${USER}/.certs/${USER}.crt
 export LOKI_CLIENT_KEY_PATH=/home/${USER}/.certs/${USER}.key
-export LOKI_ADDR="https://loki.infra-logging.atl1.us.prod.linode.com"
 
 
 # salt
@@ -146,6 +128,9 @@ export TERM=xterm-256color
 
 # put tokens in ~/.secrets/tokens
 source ~/.secrets/tokens
+
+# local-only work config
+[ -f ~/.zshrc.work ] && source ~/.zshrc.work
 
 eval "$(direnv hook zsh)"
 
@@ -174,4 +159,3 @@ export PATH=/home/wbollock/.opencode/bin:$PATH
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/home/wbollock/.lmstudio/bin"
 # End of LM Studio CLI section
-

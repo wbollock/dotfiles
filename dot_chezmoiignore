@@ -29,3 +29,7 @@
 .lesshst
 .viminfo
 .wget-hsts
+
+# Local work-specific overrides
+.zshrc.work
+.gitconfig.work

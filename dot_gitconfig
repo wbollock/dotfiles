@@ -1,5 +1,8 @@
 [user]
 	name = Will Bollock
+	email = wbollock@gmail.com
+[include]
+	path = ~/.gitconfig.work
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
