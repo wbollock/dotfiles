@@ -134,6 +134,21 @@ source ~/.secrets/tokens
 
 eval "$(direnv hook zsh)"
 
+# Chezmoi reminder: show unapplied/unsaved changes before each prompt.
+if command -v chezmoi >/dev/null 2>&1; then
+  autoload -Uz add-zsh-hook
+  cz-changed() { chezmoi status "$@"; }
+  cz-unmanaged() { chezmoi unmanaged -p relative "$@"; }
+  chezmoi_reminder_precmd() {
+    local changed
+    changed="$(chezmoi status 2>/dev/null | wc -l | awk '{print $1}')"
+    [[ -n "$changed" ]] || changed="0"
+    [[ "$changed" == "0" ]] && return
+    print -P "%F{173}%B ${changed} changed dotfiles (run: cz-changed)%b%f"
+  }
+  add-zsh-hook precmd chezmoi_reminder_precmd
+fi
+
 ### MISC CONFIGS ###
 
 # https://unix.stackexchange.com/questions/212127/zsh-disable-file-exists-warning-with-redirection
