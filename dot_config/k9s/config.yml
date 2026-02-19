@@ -1,0 +1,81 @@
+k9s:
+  refreshRate: 2
+  maxConnRetry: 5
+  enableMouse: false
+  headless: false
+  logoless: false
+  crumbsless: false
+  readOnly: false
+  noExitOnCtrlC: false
+  noIcons: false
+  skipLatestRevCheck: false
+  logger:
+    tail: 100
+    buffer: 5000
+    sinceSeconds: 300
+    fullScreenLogs: false
+    textWrap: false
+    showTime: false
+  currentContext: teleport.infra-o11y-apps.iad3.us.prod.linode.com-victoriametrics-osa1-jp-prod
+  currentCluster: teleport.infra-o11y-apps.iad3.us.prod.linode.com
+  clusters:
+    teleport.infra-o11y-apps.iad3.us.prod.linode.com:
+      namespace:
+        active: victoriametrics
+        lockFavorites: false
+        favorites:
+        - victoriametrics
+        - gecko-otlp-logs
+        - kmi-secrets-provider
+        - gen2obj-metrics
+        - all
+        - prometheus
+        - observability
+        - default
+      view:
+        active: po
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+    teleport.infra-o11y-apps.rin1.us.staging.linode.com:
+      namespace:
+        active: all
+        lockFavorites: false
+        favorites:
+        - all
+        - gecko-otlp-logs
+        - traefik-infrav6
+        - kmi-secrets-provider
+        - traefik
+        - default
+      view:
+        active: po
+      featureGates:
+        nodeShell: false
+      shellPod:
+        image: busybox:1.35.0
+        command: []
+        args: []
+        namespace: default
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        labels: {}
+      portForwardAddress: localhost
+  thresholds:
+    cpu:
+      critical: 90
+      warn: 70
+    memory:
+      critical: 90
+      warn: 70
+  screenDumpDir: /tmp/k9s-screens-wbollock

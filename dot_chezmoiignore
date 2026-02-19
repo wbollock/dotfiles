@@ -1,0 +1,31 @@
+# Never manage common secret-bearing files/directories with chezmoi.
+.ssh/**
+.gnupg/**
+.netrc
+.pypirc
+.vault-token
+.s3cfg
+.aws/**
+.kube/config
+.kube/cache/**
+.config/gh/hosts.yml
+.config/op/config
+.config/1Password/**
+.secrets/**
+.cert/**
+.certs/**
+.pki/**
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Avoid local sensitive/runtime history/state files.
+.bash_history
+.zsh_history
+.python_history
+.lesshst
+.viminfo
+.wget-hsts

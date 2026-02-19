@@ -1,0 +1,72 @@
+{
+    "editor.fontSize": 14,
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter-notebook"
+    },
+    "workbench.startupEditor": "none",
+    "security.workspace.trust.untrustedFiles": "open",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "workbench.iconTheme": "Monokai Pro (Filter Spectrum) Icons",
+    "editor.wordWrap": "on",
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    },
+    "cSpell.enabledFileTypes": {
+        "perl": true,
+        "sls": true
+    },
+    "workbench.colorTheme": "Monokai Pro (Filter Spectrum)",
+    "git.autofetch": true,
+    "cSpell.enabled": true,
+    "window.zoomLevel": 1,
+    "files.autoSave": "afterDelay",
+    "update.showReleaseNotes": false,
+    "githubCodeOwners.format.enabled": true,
+    "vs-kubernetes": {
+        "vs-kubernetes.crd-code-completion": "enabled"
+    },
+    "go.toolsManagement.autoUpdate": true,
+    "makefile.configureOnOpen": false,
+    "llama-vscode.endpoint": "http://127.0.0.1:8080",
+    "gitlens.launchpad.indicator.enabled": false,
+    "window.autoDetectColorScheme": true,
+    "workbench.preferredDarkColorTheme": "Monokai Pro (Filter Spectrum)",
+    "workbench.preferredLightColorTheme": "Monokai Pro Light (Filter Sun)",
+    "vale.enableSpellcheck": true,
+    "vale.valeCLI.syncOnStartup": true,
+    "github.copilot.selectedCompletionModel": "",
+    "docker.extension.enableComposeLanguageServer": false,
+    "[markdown]": {
+        "diffEditor.ignoreTrimWhitespace": false
+    },
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        },
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+    "github.copilot.chat.codesearch.enabled": true,
+    "github.copilot.chat.agent.thinkingTool": true,
+    "github.copilot.chat.alternateGptPrompt.enabled": true,
+    "github.copilot.chat.newWorkspace.useContext7": true,
+    "cSpell.unknownWords": "report-simple",
+    "terminal.integrated.suggest.enabled": false,
+    "chat.viewWelcome.enabled": false,
+    "chat.viewSessions.enabled": false,
+    "editor.tabCompletion": "on",
+    
+
+}
