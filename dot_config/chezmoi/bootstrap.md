@@ -25,6 +25,8 @@ Note: `chezmoi apply` now attempts to auto-install Prezto if `~/.zprezto` is mis
 ## Manual secrets and local-only files
 
 Do not store these in chezmoi.
+Do not run `chezmoi add` on secret files or folders.
+Keep secrets out of `~/.local/share/chezmoi` entirely.
 
 Create/populate manually:
 - `~/.secrets/tokens` (sourced by `~/.zshrc`)

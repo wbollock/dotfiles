@@ -1,0 +1,38 @@
+# Ghostty config
+#
+# You swap Cmd/Ctrl at the macOS level. These bindings make Cmd-modified
+# keypresses behave like terminal Ctrl keypresses, so physical Ctrl acts like
+# Windows/Linux terminal Ctrl (for example Ctrl+C -> SIGINT).
+#
+# Keep app copy/paste on Ctrl+Shift like common terminal defaults.
+
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+
+# Map Cmd+a..z to terminal control codes (0x01..0x1a).
+keybind = super+a=text:\x01
+keybind = super+b=text:\x02
+keybind = super+c=text:\x03
+keybind = super+d=text:\x04
+keybind = super+e=text:\x05
+keybind = super+f=text:\x06
+keybind = super+g=text:\x07
+keybind = super+h=text:\x08
+keybind = super+i=text:\x09
+keybind = super+j=text:\x0a
+keybind = super+k=text:\x0b
+keybind = super+l=text:\x0c
+keybind = super+m=text:\x0d
+keybind = super+n=text:\x0e
+keybind = super+o=text:\x0f
+keybind = super+p=text:\x10
+keybind = super+q=text:\x11
+keybind = super+r=text:\x12
+keybind = super+s=text:\x13
+keybind = super+t=text:\x14
+keybind = super+u=text:\x15
+keybind = super+v=text:\x16
+keybind = super+w=text:\x17
+keybind = super+x=text:\x18
+keybind = super+y=text:\x19
+keybind = super+z=text:\x1a
