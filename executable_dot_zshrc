@@ -84,27 +84,9 @@ alias pcs='scp -S hss'
 # for ssh-wrapper
 export HSS_COMMAND=ssh-wrapper
 
-# linagios test linode
-alias sshlinagios='ssh root@96.126.108.120'
-# nagios-xi test linode
-alias sshnagios='ssh root@139.144.16.126'
-# my siege linode
-alias sshsiege='ssh root@23.239.30.73'
-# my big linode
-alias sshbeefy='ssh root@23.92.26.83'
-# my vanilla debian test linode
-alias sshdebian='ssh root@45.79.143.149'
-alias sshdev='ssh -A root@172.104.12.43'
-# ansible linode
-alias sshansible="ssh -A root@50.116.55.145"
-
 # eng vm
 alias sshengvm="ssh -A bos-lhvr0c.bos01.corp.akamai.com"
 
-# gecko
-#
-alias sshgeckolabnv5="ssh root@198.18.22.45"
-alias sshgeckolabnv3="ssh root@198.18.141.7"
 ### ENVIRONMENT VARS ###
 
 export KUBE_EDITOR=/usr/bin/vim
