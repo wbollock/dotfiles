@@ -144,7 +144,7 @@ if command -v chezmoi >/dev/null 2>&1; then
     changed="$(chezmoi status 2>/dev/null | wc -l | awk '{print $1}')"
     [[ -n "$changed" ]] || changed="0"
     [[ "$changed" == "0" ]] && return
-    print -P "%F{173}%B ${changed} changed dotfiles (run: cz-changed)%b%f"
+    print -P "%F{173}%B ${changed} changed dotfiles (run: cz-changed; then: chezmoi apply; if blocked: chezmoi edit <file>)%b%f"
   }
   add-zsh-hook precmd chezmoi_reminder_precmd
 fi
