@@ -82,7 +82,7 @@ augroup vimwiki_fix_auto_diary_index
 augroup END
 
 " https://frostyx.cz/posts/vimwiki-diary-template
-au BufNewFile ~/vimwiki/diary/*.wiki :silent 0r !/home/wbollock/scripts/vim_scripts/gen_vimwiki_diary '%'
+au BufNewFile ~/vimwiki/diary/*.wiki :silent 0r !~/scripts/vim_scripts/gen_vimwiki_diary '%'
 
 "########### Plugin Configuration End ###########"
 
@@ -140,4 +140,3 @@ let &t_SI .= "\<Esc>[5 q"
 let &t_SR .= "\<Esc>[5 q"
 let &t_EI .= "\<Esc>[5 q"
 "########### General Configuration End ###########"
-

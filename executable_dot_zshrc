@@ -13,7 +13,9 @@ fi
 export PATH=$PATH:~/bin
 
 
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+if [ -f "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+  source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
@@ -73,17 +75,24 @@ export SSH_AUTH_SOCK=~/.1password/agent.sock
 export TELEPORT_ADD_KEYS_TO_AGENT=no
 
 # kubectl auto complete
-[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
+if command -v kubectl >/dev/null 2>&1; then
+  source <(kubectl completion zsh)
+fi
 
 ### ENVIRONMENT VARS ###
 
 export KUBE_EDITOR=/usr/bin/vim
-export KUBECONFIG="${$(ls ~/.kube/config.d/*)//$'\n'/:}"
+if [ -d "$HOME/.kube/config.d" ]; then
+  KUBECONFIG_FILES=("$HOME"/.kube/config.d/*(N))
+  if (( ${#KUBECONFIG_FILES[@]} > 0 )); then
+    export KUBECONFIG="${(j/:/)KUBECONFIG_FILES}"
+  fi
+fi
 export VISUAL=/usr/bin/vim
 export EDITOR=$VISUAL
 
 # rust PATH
-export PATH="/home/wbollock/.cargo/bin/:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
 # pip PATH
 export PATH="$HOME/.local/bin:$PATH"
 # path for krew
@@ -100,15 +109,17 @@ ip-info(){
 # Python Virtualenvwrapper
 export WORKON_HOME=${HOME}/.virtualenvs
 export PROJECT_HOME=${HOME}/Development/
-source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+if [ -f /usr/share/virtualenvwrapper/virtualenvwrapper.sh ]; then
+  source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+fi
 # User Ruby Path
 export GEM_HOME="${HOME}/.gem/ruby/$(ruby --version | sed -E 's/^.* ([0-9]+\.[0-9]+)\..*$/\1.0/')"
 export PATH=${PATH}:${GEM_HOME}/bin
 
 # loki certs
 #
-export LOKI_CLIENT_CERT_PATH=/home/${USER}/.certs/${USER}.crt
-export LOKI_CLIENT_KEY_PATH=/home/${USER}/.certs/${USER}.key
+export LOKI_CLIENT_CERT_PATH="${HOME}/.certs/${USER}.crt"
+export LOKI_CLIENT_KEY_PATH="${HOME}/.certs/${USER}.key"
 
 
 # salt
@@ -116,23 +127,21 @@ export SALT_KITCHEN_DRIVER="vagrant"
 export KITCHEN_DRIVER_NAME="vagrant"
 
 # go env path
-export PATH=${PATH}:/home/wbollock/go/bin
-
-# init asdf
-# https://asdf-vm.com/guide/getting-started.html#_3-install-asdf
-. $HOME/.asdf/asdf.sh
+export PATH="$PATH:$HOME/go/bin"
 
 # fix term colors for tmux
 # https://unix.stackexchange.com/questions/1045/getting-256-colors-to-work-in-tmux
 export TERM=xterm-256color
 
 # put tokens in ~/.secrets/tokens
-source ~/.secrets/tokens
+[ -f "$HOME/.secrets/tokens" ] && source "$HOME/.secrets/tokens"
 
 # local-only work config
 [ -f ~/.zshrc.work ] && source ~/.zshrc.work
 
-eval "$(direnv hook zsh)"
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+fi
 
 # Chezmoi reminder: show unapplied/unsaved changes before each prompt.
 if command -v chezmoi >/dev/null 2>&1; then
@@ -163,14 +172,18 @@ zle-line-init() {
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 #NSS_DEFAULT_DB_TYPE sql
 export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-eval "$(/home/wbollock/.local/bin/mise activate zsh)"
+if command -v rbenv >/dev/null 2>&1; then
+  eval "$(rbenv init -)"
+fi
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh 2>/dev/null)"
+fi
 
-if [ -e /home/wbollock/.nix-profile/etc/profile.d/nix.sh ]; then . /home/wbollock/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi # added by Nix installer
 
 # opencode
-export PATH=/home/wbollock/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/home/wbollock/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section

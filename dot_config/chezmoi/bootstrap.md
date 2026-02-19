@@ -20,6 +20,8 @@ chezmoi init --apply wbollock
 - `kubectl`, `kubectx`, `kubens`
 - `rbenv`
 
+Note: `chezmoi apply` now attempts to auto-install Prezto if `~/.zprezto` is missing and `git` is available.
+
 ## Manual secrets and local-only files
 
 Do not store these in chezmoi.

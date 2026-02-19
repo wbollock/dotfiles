@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+set -eu
+
+PREZTO_DIR="${HOME}/.zprezto"
+
+if [ -d "${PREZTO_DIR}/.git" ]; then
+  exit 0
+fi
+
+if [ -e "${PREZTO_DIR}" ] && [ ! -d "${PREZTO_DIR}/.git" ]; then
+  echo "chezmoi: ${PREZTO_DIR} exists but is not a Prezto git repo; skipping auto-install" >&2
+  exit 0
+fi
+
+if ! command -v git >/dev/null 2>&1; then
+  echo "chezmoi: git not found; skipping Prezto auto-install" >&2
+  exit 0
+fi
+
+echo "chezmoi: installing Prezto to ${PREZTO_DIR}" >&2
+if ! git clone --recursive https://github.com/sorin-ionescu/prezto.git "${PREZTO_DIR}"; then
+  echo "chezmoi: Prezto auto-install failed; install manually with:" >&2
+  echo "  git clone --recursive https://github.com/sorin-ionescu/prezto.git ~/.zprezto" >&2
+fi

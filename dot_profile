@@ -27,9 +27,8 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 . "$HOME/.cargo/env"
 
-if [ -e /home/wbollock/.nix-profile/etc/profile.d/nix.sh ]; then . /home/wbollock/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi # added by Nix installer
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/home/wbollock/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
-

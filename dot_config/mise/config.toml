@@ -5,5 +5,3 @@ experimental = true
 
 [tools]
 go = "1.24.5"
-gohugo = "extended_0.122.0"
-

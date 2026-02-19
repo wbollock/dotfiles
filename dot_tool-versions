@@ -1,4 +1,3 @@
-sloth 0.13.0
 jq 1.6
 vault 1.12.2+ent
 pre-commit 3.4.0
@@ -11,7 +10,6 @@ venom 1.1.0
 svu 1.12.0
 just 1.36.0
 golangci-lint latest
-markdownlint-cli2 latest
 vale latest
 go 1.25.0
 claude latest
@@ -19,4 +17,3 @@ node 22
 uv latest
 codex latest
 chezmoi latest
-
