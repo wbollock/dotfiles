@@ -1,0 +1,195 @@
+# # Executes commands at the start of an interactive session.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#
+
+# Source Prezto.
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
+
+# Customize to your needs...
+export PATH=$PATH:~/bin
+
+
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh
+HISTFILE=~/.zsh_history
+HISTSIZE=999999999
+SAVEHIST=$HISTSIZE
+
+
+### ALIASES ###
+
+
+alias gs="git status"
+alias gcmainpull='git fetch; git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed "s@^refs/remotes/origin/@@" ); git pull upstream $(git symbolic-ref refs/remotes/origin/HEAD | sed "s@^refs/remotes/origin/@@" )'
+alias gst="git status -sb"
+alias gl="git log"
+alias ga="git add"
+alias gaa="git add -A"
+alias gal="git add ."
+alias gall="git add ."
+alias gca="git commit -a"
+alias gc="git commit -m"
+alias gcot="git checkout"
+alias gchekout="git checkout"
+alias gchckout="git checkout"
+alias gckout="git checkout"
+#alias go="git push -u origin"
+alias gsh='git stash'
+alias gw='git whatchanged'
+alias gitlg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+# https://github.com/caarlos0/svu?tab=readme-ov-file#creating-tags
+alias gtn='git tag $(svu next)'
+
+alias cat='bat -p'
+alias ghe='GH_HOST=bits.linode.com gh'
+# add ssh key to something, don't need to re-auth ssh key each time
+# alias sshkey='ssh-add -K ~/.ssh/id_rsa'
+
+# mac ssh agent woes
+# alias killssh='killall ssh-agent; killall ssh; ssh-add -K ~/.ssh/id_rsa'
+
+# study ckad
+#alias studyckad="open -a Firefox 'https://www.udemy.com/course/certified-kubernetes-application-developer/learn' && code ~/github/private_notes/ckad"
+#alias studygo="open -a Firefox 'https://quii.gitbook.io/learn-go-with-tests/' && code --new-window"
+
+# vscode
+# https://github.com/microsoft/vscode/issues/193188#issuecomment-1965664266
+#alias code="code --disable-gpu --disable-software-rasterizer"
+
+# kube
+alias k='kubectl'
+alias kctx='kubectx'
+alias kns='kubens'
+
+# 1Password SSH Auth Sock
+export SSH_AUTH_SOCK=~/.1password/agent.sock
+# https://github.com/gravitational/teleport/issues/22326#issue-1601647601
+export TELEPORT_ADD_KEYS_TO_AGENT=no
+
+# kubectl auto complete
+[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)
+
+### Linode-specific ###
+
+# hss for scping files
+alias pcs='scp -S hss'
+
+# for ssh-wrapper
+export HSS_COMMAND=ssh-wrapper
+
+# linagios test linode
+alias sshlinagios='ssh root@96.126.108.120'
+# nagios-xi test linode
+alias sshnagios='ssh root@139.144.16.126'
+# my siege linode
+alias sshsiege='ssh root@23.239.30.73'
+# my big linode
+alias sshbeefy='ssh root@23.92.26.83'
+# my vanilla debian test linode
+alias sshdebian='ssh root@45.79.143.149'
+alias sshdev='ssh -A root@172.104.12.43'
+# ansible linode
+alias sshansible="ssh -A root@50.116.55.145"
+
+# eng vm
+alias sshengvm="ssh -A bos-lhvr0c.bos01.corp.akamai.com"
+
+# gecko
+#
+alias sshgeckolabnv5="ssh root@198.18.22.45"
+alias sshgeckolabnv3="ssh root@198.18.141.7"
+### ENVIRONMENT VARS ###
+
+export KUBE_EDITOR=/usr/bin/vim
+export KUBECONFIG="${$(ls ~/.kube/config.d/*)//$'\n'/:}"
+export VISUAL=/usr/bin/vim
+export EDITOR=$VISUAL
+
+# rust PATH
+export PATH="/home/wbollock/.cargo/bin/:$PATH"
+# pip PATH
+export PATH="$HOME/.local/bin:$PATH"
+# hss path for linode_gear_info
+export PATH="$HOME/repos/forks/hss-config/:$PATH"
+# path for krew
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+# kind using podman
+KIND_EXPERIMENTAL_PROVIDER=podman
+
+ip-info(){
+    curl -s ipinfo.io/$1 | jq
+}
+
+# dbennet kitchen stuff
+
+# Python Virtualenvwrapper
+export WORKON_HOME=${HOME}/.virtualenvs
+export PROJECT_HOME=${HOME}/Development/
+source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+# User Ruby Path
+export GEM_HOME="${HOME}/.gem/ruby/$(ruby --version | sed -E 's/^.* ([0-9]+\.[0-9]+)\..*$/\1.0/')"
+export PATH=${PATH}:${GEM_HOME}/bin
+
+# vault
+export VAULT_ADDR=https://vault.linode.com:8200
+
+# loki certs
+#
+export LOKI_CLIENT_CERT_PATH=/home/${USER}/.certs/${USER}.crt
+export LOKI_CLIENT_KEY_PATH=/home/${USER}/.certs/${USER}.key
+export LOKI_ADDR="https://loki.infra-logging.atl1.us.prod.linode.com"
+
+
+# salt
+export SALT_KITCHEN_DRIVER="vagrant"
+export KITCHEN_DRIVER_NAME="vagrant"
+
+# go env path
+export PATH=${PATH}:/home/wbollock/go/bin
+
+# init asdf
+# https://asdf-vm.com/guide/getting-started.html#_3-install-asdf
+. $HOME/.asdf/asdf.sh
+
+# fix term colors for tmux
+# https://unix.stackexchange.com/questions/1045/getting-256-colors-to-work-in-tmux
+export TERM=xterm-256color
+
+# put tokens in ~/.secrets/tokens
+source ~/.secrets/tokens
+
+eval "$(direnv hook zsh)"
+
+### MISC CONFIGS ###
+
+# https://unix.stackexchange.com/questions/212127/zsh-disable-file-exists-warning-with-redirection
+setopt clobber
+
+# https://github.com/junegunn/fzf.vim/issues/1125
+zle-line-init() {
+    #zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+    echo -ne "\e[5 q"
+}
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#NSS_DEFAULT_DB_TYPE sql
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+eval "$(/home/wbollock/.local/bin/mise activate zsh)"
+
+if [ -e /home/wbollock/.nix-profile/etc/profile.d/nix.sh ]; then . /home/wbollock/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+# opencode
+export PATH=/home/wbollock/.opencode/bin:$PATH
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/wbollock/.lmstudio/bin"
+# End of LM Studio CLI section
+
