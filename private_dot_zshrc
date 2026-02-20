@@ -50,6 +50,8 @@ alias gitlg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Crese
 alias gtn='git tag $(svu next)'
 
 alias cat='bat -p'
+alias macos-darkmode='osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to true"'
+alias macos-lightmode='osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to false"'
 # add ssh key to something, don't need to re-auth ssh key each time
 # alias sshkey='ssh-add -K ~/.ssh/id_rsa'
 
@@ -148,12 +150,40 @@ if command -v chezmoi >/dev/null 2>&1; then
   autoload -Uz add-zsh-hook
   cz-changed() { chezmoi status "$@"; }
   cz-unmanaged() { chezmoi unmanaged -p relative "$@"; }
+  cz-add-changed() {
+    local -a files
+    local line path reply f
+
+    while IFS= read -r line; do
+      [[ -z "$line" ]] && continue
+      path="${line#???}"
+      [[ -z "$path" ]] && continue
+      [[ "$path" == ".secrets/tokens" ]] && continue
+      files+=("$path")
+    done < <(chezmoi status)
+
+    if (( ${#files[@]} == 0 )); then
+      echo "No addable chezmoi changes."
+      return 0
+    fi
+
+    echo "About to run: chezmoi add <file> for ${#files[@]} file(s):"
+    printf '  %s\n' "${files[@]}"
+    read -r "?Proceed? [y/N] " reply
+    [[ "$reply" == [yY] ]] || { echo "Canceled."; return 1; }
+
+    for f in "${files[@]}"; do
+      chezmoi add -- "$f" || return $?
+    done
+
+    echo "Done. Next: chezmoi apply"
+  }
   chezmoi_reminder_precmd() {
     local changed
     changed="$(chezmoi status 2>/dev/null | wc -l | awk '{print $1}')"
     [[ -n "$changed" ]] || changed="0"
     [[ "$changed" == "0" ]] && return
-    print -P "%F{173}%B ${changed} changed dotfiles (run: cz-changed; then: chezmoi apply; if blocked: chezmoi add <file>)%b%f"
+    print -P "%F{173}%B${changed} changed dotfiles (review: cz-changed; bulk add: cz-add-changed; apply: chezmoi apply)%b%f"
   }
   add-zsh-hook precmd chezmoi_reminder_precmd
 fi

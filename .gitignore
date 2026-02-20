@@ -1,1 +1,4 @@
 private_dot_secrets/
+
+# Never track local secret tokens
+private_dot_secrets/private_tokens
