@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# connect to vpn
+#startvpn &
+
+# open applications
+# i3placer <[-e command]> [-c class] [-w workspace] [-t timeout]
+
+i3placer -e firefox -w 1
+i3placer -e "google-chrome --new-window web.webex.com" -w 3
+#i3placer -e "google-chrome --new-window https://app.gather.town/ap>
+i3placer -e slack -w 2
+i3placer -e "gtk-launch 1password" -w 1
+
+i3placer -e "obsidian" -w 1
+
+i3placer -e "ticktick" -w 1
+i3placer -e spotify -w 3
+#i3placer -e "gtk-launch webex.desktop" -w 3
+#i3placer -e "gtk-launch pulse" -w 3
+i3placer -e "gtk-launch appimagekit-eaaclient.desktop" -w 3
+#i3-msg 'workspace 3:Web; exec /usr/bin/firefox
+#i3-msg 'workspace 2; exec slack; workspace 1'
+#i3-msg 'workspace 3; exec spotify; workspace 1'
+#nohup gtk-launch webex &
+
+# ssh-key
+sleep 10 # for firefox to load
+
+# using 1password ssh agent
+#ssh-add ~/.ssh/id_ed25519_0923
