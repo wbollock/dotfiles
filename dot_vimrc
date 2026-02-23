@@ -128,12 +128,12 @@ augroup gitsetup
         " Only set these commands up for git commits
         autocmd FileType gitcommit
                 \  hi def link gitcommitOverflow Error
-                \| autocmd CursorMoved,CursorMovedI *
+                \| autocmd CursorMoved,CursorMovedI <buffer>
                         \  let &l:textwidth = line('.') == 1 ? 50 : 72
 augroup end
 
 " clipboard - https://stackoverflow.com/a/10979533
-set clipboard=unnamedplus
+set clipboard=
 
 " set cursor cause of FZF bug - https://github.com/junegunn/fzf.vim/issues/1125
 let &t_SI .= "\<Esc>[5 q"

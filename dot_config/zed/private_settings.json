@@ -1,4 +1,7 @@
 {
+  "search": {
+    "include_ignored": true
+  },
   "buffer_line_height": "standard",
   "ui_font_family": "DroidSansMono Nerd Font",
   "buffer_font_family": "DroidSansMono Nerd Font",
