@@ -13,5 +13,5 @@ brew "make"
 brew "curl"
 brew "coreutils"
 brew "FelixKratz/formulae/sketchybar"
+brew "jira-cli"
 
-cask "rectangle"
