@@ -1,15 +1,21 @@
 {
   "search": {
-    "include_ignored": true
+    "include_ignored": true,
   },
   "buffer_line_height": "standard",
   "ui_font_family": "DroidSansMono Nerd Font",
   "buffer_font_family": "DroidSansMono Nerd Font",
   "buffer_font_features": {
-    "calt": 0,
+    "calt": false,
     "liga": 0,
   },
   "agent_servers": {
+    "github-copilot-cli": {
+      "type": "registry"
+    },
+    "opencode": {
+      "type": "registry"
+    },
     "github-copilot": {
       "type": "registry",
     },
@@ -34,5 +40,10 @@
     "mode": "system",
     "light": "Ayu Light",
     "dark": "Zedokai Darker (Filter Spectrum)",
+  },
+  "terminal": {
+    "font_features": {
+      "calt": false,
+    },
   },
 }
