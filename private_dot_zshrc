@@ -145,29 +145,49 @@ if command -v direnv >/dev/null 2>&1; then
   eval "$(direnv hook zsh)"
 fi
 
-# Chezmoi reminder: show unapplied/unsaved changes before each prompt.
+# Chezmoi dotfile management helpers.
 if command -v chezmoi >/dev/null 2>&1; then
   autoload -Uz add-zsh-hook
+
+  # List changed dotfiles with their real home paths and status codes.
   cz-changed() {
     local line state rel target
-
     while IFS= read -r line; do
       [[ -z "$line" ]] && continue
       state="$(printf '%s' "$line" | cut -c1-2)"
       rel="$(printf '%s' "$line" | cut -c4-)"
       [[ -z "$rel" ]] && continue
-
       target="$(chezmoi target-path -- "$rel" 2>/dev/null || printf '%s' "$HOME/$rel")"
       printf '%s %s\n' "$state" "$target"
     done < <(chezmoi status "$@")
   }
+
+  # Show a full diff of what would change (home vs chezmoi source).
+  cz-diff() { chezmoi diff "$@" | ${PAGER:-less -R}; }
+
+  # Add a new file (or files) to chezmoi management.
+  cz-add() { chezmoi add "$@"; }
+
+  # Sync home → source and commit. Usage: cz-save [commit message]
+  cz-save() {
+    local src msg
+    src="$(chezmoi source-path)"
+    chezmoi re-add
+    git -C "$src" add -A
+    msg="${*:-chore: update dotfiles}"
+    git -C "$src" commit -m "$msg"
+  }
+
+  # Push chezmoi source to remote (explicit step, separate from cz-save).
+  cz-push() { git -C "$(chezmoi source-path)" push "$@"; }
+
   cz-unmanaged() { chezmoi unmanaged -p relative "$@"; }
+
   chezmoi_reminder_precmd() {
     local changed
     changed="$(chezmoi status 2>/dev/null | wc -l | awk '{print $1}')"
-    [[ -n "$changed" ]] || changed="0"
     [[ "$changed" == "0" ]] && return
-    print -P "%F{173}%B${changed} changed dotfiles (review: cz-changed; apply: chezmoi apply)%b%f"
+    print -P "%F{173}%B${changed} changed dotfiles — cz-changed | cz-diff | cz-save%b%f"
   }
   add-zsh-hook precmd chezmoi_reminder_precmd
 fi
@@ -183,6 +203,7 @@ zle-line-init() {
     echo -ne "\e[5 q"
 }
 
+export FZF_TMUX_HEIGHT="~40%"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 #NSS_DEFAULT_DB_TYPE sql
 export PATH="$HOME/.rbenv/bin:$PATH"

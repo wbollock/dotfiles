@@ -4,12 +4,17 @@
   },
   "buffer_line_height": "standard",
   "ui_font_family": "DroidSansMono Nerd Font",
-  "buffer_font_family": "DroidSansMono Nerd Font",
+  "buffer_font_family": "Menlo",
   "buffer_font_features": {
     "calt": false,
-    "liga": 0,
+    "liga": false,
+    "clig": false,
+    "dlig": false,
   },
   "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    },
     "github-copilot-cli": {
       "type": "registry"
     },
@@ -39,7 +44,7 @@
   "theme": {
     "mode": "system",
     "light": "Ayu Light",
-    "dark": "Zedokai Darker (Filter Spectrum)",
+    "dark": "Tokyo Night Storm",
   },
   "terminal": {
     "font_features": {

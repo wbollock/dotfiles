@@ -1,3 +1,5 @@
 [user]
 	name = Will Bollock
 	email = wbollock@akamai.com
+[url "ssh://git@bits.linode.com/"]
+        insteadOf = https://bits.linode.com/
