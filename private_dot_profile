@@ -32,3 +32,12 @@ if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
+
+# Add ~/.local/bin to PATH for Claude Code (Added by setup script)
+export PATH="$HOME/.local/bin:$PATH"
+
+
+# local-only work config (Claude Code Foundry, etc.) - not chezmoi-managed
+[ -f ~/.zshrc.work ] && . ~/.zshrc.work
+export NODE_EXTRA_CA_CERTS="/Users/wbollock/.claude-certs/full_chain.pem"
+export CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING=1

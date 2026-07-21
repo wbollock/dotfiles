@@ -23,6 +23,13 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 HISTFILE=~/.zsh_history
 HISTSIZE=999999999
 SAVEHIST=$HISTSIZE
+setopt SHARE_HISTORY           # share history across sessions; writes each cmd to disk immediately
+setopt EXTENDED_HISTORY        # record timestamp of each command
+setopt HIST_EXPIRE_DUPS_FIRST  # expire duplicates before unique entries when trimming
+setopt HIST_IGNORE_DUPS        # skip consecutive duplicate entries
+setopt HIST_IGNORE_SPACE       # skip commands prefixed with a space
+setopt HIST_REDUCE_BLANKS      # strip extra whitespace from history entries
+setopt HIST_VERIFY             # show history expansion before running it
 
 
 ### ALIASES ###
@@ -119,9 +126,10 @@ export GEM_HOME="${HOME}/.gem/ruby/$(ruby --version | sed -E 's/^.* ([0-9]+\.[0-
 export PATH=${PATH}:${GEM_HOME}/bin
 
 # loki certs
-#
+export LOKI_CA_CERT_PATH="${HOME}/.certs/LinodeInternalRoot-2019.pem"
 export LOKI_CLIENT_CERT_PATH="${HOME}/.certs/${USER}.crt"
 export LOKI_CLIENT_KEY_PATH="${HOME}/.certs/${USER}.key"
+export LOKI_TLS_SKIP_VERIFY="true"
 
 
 # salt
@@ -222,3 +230,16 @@ export PATH="$HOME/.opencode/bin:$PATH"
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
+
+
+# Claude Code Foundry config lives in ~/.zshrc.work, sourced above
+# Homebrew curl must come before /usr/local/bin/curl-config (a root-owned 2020
+# system binary pointing to /usr/local/include, which is permission-denied).
+# Without this, native gem extensions like ovirt-engine-sdk fail to compile.
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+
+export NODE_EXTRA_CA_CERTS="/Users/wbollock/.claude-certs/full_chain.pem"
+export CLAUDE_CODE_ENABLE_FINE_GRAINED_TOOL_STREAMING=1
+
+# Copilot CLI: auto-approve all tool calls without prompts
+export COPILOT_ALLOW_ALL=1

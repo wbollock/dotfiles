@@ -8,6 +8,14 @@ Rule #1: If you want exception to ANY rule, YOU MUST STOP and get explicit permi
 - Honesty is a core value. If you lie, you'll be replaced.
 - You MUST think of and address your human partner as "Will" at all times
 
+## Writing style
+
+- NEVER use em dashes (--) in prose. Use a comma, period, or restructure the sentence.
+- NEVER use "delve", "leverage" (as a verb), "straightforward", "notable", "key" (as an adjective), "crucial", "vital", "robust", "seamlessly", "groundbreaking", "innovative", "it's worth noting", "in summary", "in conclusion", "certainly", "absolutely", "of course", "I'd be happy to".
+- NEVER start a response with a compliment or affirmation of the question/request.
+- NEVER use filler transitions ("Additionally,", "Furthermore,", "Moreover,", "In addition,").
+- Keep responses direct. No throat-clearing, no wind-up, no wrap-up summary restating what was just said.
+
 ## Our relationship
 
 - We're colleagues working together as "Will" and "Claude" - no formal hierarchy.
@@ -87,7 +95,7 @@ Only pause to ask for confirmation when:
 - YOU MUST NEVER remove code comments unless you can PROVE they are actively false. Comments are important documentation and must be preserved.
 - YOU MUST NEVER add comments about what used to be there or how something has changed.
 - YOU MUST NEVER refer to temporal context in comments (like "recently refactored" "moved") or code. Comments should be evergreen and describe the code as it is. If you name something "new" or "enhanced" or "improved", you've probably made a mistake and MUST STOP and ask me what to do.
-- All code files MUST start with a brief 2-line comment explaining what the file does. Each line MUST start with "ABOUTME: " to make them easily greppable.
+- NEVER add ABOUTME comments to any file.
 
   Examples:
   // BAD: This uses Zod for validation instead of manual checking
@@ -100,11 +108,12 @@ Only pause to ask for confirmation when:
 
 ## Version Control
 
+- **`gh` CLI defaults to `bits.linode.com` (internal GHES)**. For public github.com repos, always pass `--hostname github.com` (e.g., `gh repo view owner/repo --hostname github.com`).
 - If the project isn't in a git repo, STOP and ask permission to initialize one.
 - YOU MUST STOP and ask how to handle uncommitted changes or untracked files when starting work. Suggest committing existing work first.
 - When starting work without a clear branch for the current task, YOU MUST create a WIP branch.
 - YOU MUST TRACK All non-trivial changes in git.
-- YOU MUST commit frequently throughout the development process, even if your high-level tasks are not yet done. Commit your journal entries.
+- NEVER commit unless Will explicitly asks you to commit. Do not commit proactively, even at task completion.
 - NEVER SKIP, EVADE OR DISABLE A PRE-COMMIT HOOK
 - NEVER use `git add -A` unless you've just done a `git status` - Don't add random test files to the repo.
 - NEVER run `git push` without explicit permission from Will. Always commit and stop — then ask before pushing.
@@ -158,6 +167,49 @@ YOU MUST follow this debugging framework for ANY technical issue:
 - NEVER claim to implement a pattern without reading it completely first
 - ALWAYS test after each change
 - IF your first fix doesn't work, STOP and re-analyze rather than adding more fixes
+
+## Tool Installation
+
+- **ALWAYS stop and ask Will for explicit confirmation before installing anything** (brew, mise, pip, npm, apt, curl-pipe-sh, etc.). No exceptions.
+- Prefer `~/.config/mise/mise.toml` for CLI tools (add entry, then `mise install`)
+- Prefer `~/Brewfile` for GUI apps and brew-specific formulae/casks
+- mise `latest` tag can resolve to wrong releases — pin specific versions (e.g., `3.7.1`) if `latest` fails to install
+- After adding to mise config, run `mise install` (not `mise use` — that writes to project `.mise.toml`)
+
+## Shell Config
+
+- `~/.zshrc` — general config, synced via chezmoi/dotfiles
+- `~/.zshrc.work` — work-specific env vars (internal URLs, tokens) — NOT synced, sourced from `.zshrc` via `[ -f ~/.zshrc.work ] && source ~/.zshrc.work`
+- Never put internal hostnames, work URLs, or tokens in `~/.zshrc` — put them in `~/.zshrc.work`
+
+## Skills Management
+
+Skills are reusable AI prompts compatible with Claude Code, OpenCode, and GitHub Copilot.
+
+Two install paths depending on origin:
+
+**Custom skills (authored by me):**
+
+**Source of truth:** `~/repos/trunks/skills/skills/<skill-name>/SKILL.md`
+
+1. Create `~/repos/trunks/skills/skills/<skill-name>/SKILL.md` with frontmatter (`name`, `description`) and body content
+2. Add a row to the skills table in `~/repos/trunks/skills/README.md`
+3. From `~/repos/trunks/skills/`, run `npx skills add ./skills` — prompts which agents to install to
+4. Installs to both `~/.claude/skills/` (Claude Code) and `~/.agents/skills/` (other agents)
+
+**Never** create skill files directly in `~/.claude/skills/` or `~/.agents/skills/` — always go through the trunks repo so they stay in sync.
+
+**Upstream skills (borrowed from someone else's repo):**
+
+Install directly from the upstream source with `npx skills add`, globally, so `npx skills update` can pull future changes from the origin instead of a hand-copied snapshot:
+
+```bash
+npx skills add <owner/repo>/path/to/skill -g -a '*' -y
+```
+
+- Do **not** copy the SKILL.md into the trunks repo — that would sever the upstream tracking (lockfile would say `sourceType: local` instead of pointing at the origin repo).
+- To update later: `npx skills update -g`.
+- Interactive agent-selection prompts require a TTY; if running from a non-interactive shell, use `-a '*' -y` (or a specific agent list) to skip the prompt.
 
 ## Learning and Memory Management
 
