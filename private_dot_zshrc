@@ -232,7 +232,42 @@ export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
 
-# Claude Code Foundry config lives in ~/.zshrc.work, sourced above
+# Claude Code mode toggle: 'personal' (own Anthropic account) vs 'foundry'
+# (Akamai gateway). Session-only - resets to foundry on every new shell.
+# Foundry credentials live in ~/.zshrc.work (not synced to dotfiles repo).
+claude-mode() {
+  case "$1" in
+    foundry)
+      if [[ -z "$CLAUDE_FOUNDRY_API_KEY" ]]; then
+        echo "claude-mode: foundry credentials not set (missing ~/.zshrc.work)" >&2
+        return 1
+      fi
+      export CLAUDE_CODE_USE_FOUNDRY=1
+      export ANTHROPIC_FOUNDRY_API_KEY="$CLAUDE_FOUNDRY_API_KEY"
+      export ANTHROPIC_FOUNDRY_BASE_URL="$CLAUDE_FOUNDRY_BASE_URL"
+      export ANTHROPIC_CUSTOM_HEADERS="$CLAUDE_FOUNDRY_HEADERS"
+      echo "claude-mode: foundry"
+      ;;
+    personal)
+      unset CLAUDE_CODE_USE_FOUNDRY ANTHROPIC_FOUNDRY_API_KEY ANTHROPIC_FOUNDRY_BASE_URL ANTHROPIC_CUSTOM_HEADERS
+      echo "claude-mode: personal"
+      ;;
+    "")
+      if [[ -n "$CLAUDE_CODE_USE_FOUNDRY" ]]; then
+        echo "claude-mode: foundry"
+      else
+        echo "claude-mode: personal"
+      fi
+      ;;
+    *)
+      echo "usage: claude-mode [personal|foundry]" >&2
+      return 1
+      ;;
+  esac
+}
+
+# Default to foundry on shell startup, if credentials are available
+[[ -n "$CLAUDE_FOUNDRY_API_KEY" ]] && claude-mode foundry
 # Homebrew curl must come before /usr/local/bin/curl-config (a root-owned 2020
 # system binary pointing to /usr/local/include, which is permission-denied).
 # Without this, native gem extensions like ovirt-engine-sdk fail to compile.
