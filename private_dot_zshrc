@@ -267,7 +267,7 @@ claude-mode() {
 }
 
 # Default to foundry on shell startup, if credentials are available
-[[ -n "$CLAUDE_FOUNDRY_API_KEY" ]] && claude-mode foundry
+[[ -n "$CLAUDE_FOUNDRY_API_KEY" ]] && claude-mode foundry >/dev/null
 # Homebrew curl must come before /usr/local/bin/curl-config (a root-owned 2020
 # system binary pointing to /usr/local/include, which is permission-denied).
 # Without this, native gem extensions like ovirt-engine-sdk fail to compile.
