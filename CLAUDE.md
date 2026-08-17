@@ -117,7 +117,7 @@ Only pause to ask for confirmation when:
 
 - **`gh` CLI defaults to `bits.linode.com` (internal GHES)**. For public github.com repos, always pass `--hostname github.com` (e.g., `gh repo view owner/repo --hostname github.com`).
 - If the project isn't in a git repo, STOP and ask permission to initialize one.
-- YOU MUST STOP and ask how to handle uncommitted changes or untracked files when starting work. Suggest committing existing work first.
+- Before any destructive git operation (checkout/restore/reset/clean, `git add -A`, force-push, branch delete) YOU MUST STOP and ask how to handle uncommitted changes or untracked files that operation would touch or discard. Suggest committing existing work first. Merely noticing untracked files at the start of a session is not itself a reason to ask — junk like `.claude/`, `.worktrees/`, or a stray plan `.md` is often fine to leave alone.
 - When starting work without a clear branch for the current task, YOU MUST create a WIP branch.
 - YOU MUST TRACK All non-trivial changes in git.
 - NEVER commit unless Will explicitly asks you to commit. Do not commit proactively, even at task completion.

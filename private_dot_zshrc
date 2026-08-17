@@ -35,6 +35,10 @@ setopt HIST_VERIFY             # show history expansion before running it
 ### ALIASES ###
 
 
+pi-clean() {
+  PI_CODING_AGENT_DIR="$HOME/.pi/agent-clean" command pi "$@"
+}
+
 alias gs="git status"
 alias gcmainpull='git fetch; git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed "s@^refs/remotes/origin/@@" ); git pull upstream $(git symbolic-ref refs/remotes/origin/HEAD | sed "s@^refs/remotes/origin/@@" )'
 alias gst="git status -sb"
