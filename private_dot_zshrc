@@ -35,6 +35,24 @@ setopt HIST_VERIFY             # show history expansion before running it
 ### ALIASES ###
 
 
+export PI_CODING_AGENT_DIR="$HOME/.pi/agent"
+
+pi() {
+  PI_CODING_AGENT_DIR="$HOME/.pi/agent" command pi "$@"
+}
+
+pi-clean() {
+  pi "$@"
+}
+
+pi-full() {
+  PI_CODING_AGENT_DIR="$HOME/.pi/agent-full" command pi "$@"
+}
+
+pi-serverless() {
+  PI_CODING_AGENT_DIR="$HOME/.pi/agent-serverless" command pi "$@"
+}
+
 alias gs="git status"
 alias gcmainpull='git fetch; git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed "s@^refs/remotes/origin/@@" ); git pull upstream $(git symbolic-ref refs/remotes/origin/HEAD | sed "s@^refs/remotes/origin/@@" )'
 alias gst="git status -sb"
@@ -131,7 +149,6 @@ export LOKI_CLIENT_CERT_PATH="${HOME}/.certs/${USER}.crt"
 export LOKI_CLIENT_KEY_PATH="${HOME}/.certs/${USER}.key"
 export LOKI_TLS_SKIP_VERIFY="true"
 
-
 # salt
 #export SALT_KITCHEN_DRIVER="vagrant"
 #export KITCHEN_DRIVER_NAME="vagrant"
@@ -149,53 +166,25 @@ export TERM=xterm-256color
 # local-only work config
 [ -f ~/.zshrc.work ] && source ~/.zshrc.work
 
+if [[ -r "$LOKI_CLIENT_CERT_PATH" && -r "$LOKI_CLIENT_KEY_PATH" && -r "$LOKI_CA_CERT_PATH" ]]; then
+  export MTLS_CLIENT_CERT_PATH="$LOKI_CLIENT_CERT_PATH"
+  export MTLS_CLIENT_KEY_PATH="$LOKI_CLIENT_KEY_PATH"
+  export MTLS_CA_CERT_PATH="$LOKI_CA_CERT_PATH"
+fi
+
 if command -v direnv >/dev/null 2>&1; then
   eval "$(direnv hook zsh)"
 fi
 
-# Chezmoi dotfile management helpers.
+# Chezmoi status reminder.
 if command -v chezmoi >/dev/null 2>&1; then
   autoload -Uz add-zsh-hook
-
-  # List changed dotfiles with their real home paths and status codes.
-  cz-changed() {
-    local line state rel target
-    while IFS= read -r line; do
-      [[ -z "$line" ]] && continue
-      state="$(printf '%s' "$line" | cut -c1-2)"
-      rel="$(printf '%s' "$line" | cut -c4-)"
-      [[ -z "$rel" ]] && continue
-      target="$(chezmoi target-path -- "$rel" 2>/dev/null || printf '%s' "$HOME/$rel")"
-      printf '%s %s\n' "$state" "$target"
-    done < <(chezmoi status "$@")
-  }
-
-  # Show a full diff of what would change (home vs chezmoi source).
-  cz-diff() { chezmoi diff "$@" | ${PAGER:-less -R}; }
-
-  # Add a new file (or files) to chezmoi management.
-  cz-add() { chezmoi add "$@"; }
-
-  # Sync home → source and commit. Usage: cz-save [commit message]
-  cz-save() {
-    local src msg
-    src="$(chezmoi source-path)"
-    chezmoi re-add
-    git -C "$src" add -A
-    msg="${*:-chore: update dotfiles}"
-    git -C "$src" commit -m "$msg"
-  }
-
-  # Push chezmoi source to remote (explicit step, separate from cz-save).
-  cz-push() { git -C "$(chezmoi source-path)" push "$@"; }
-
-  cz-unmanaged() { chezmoi unmanaged -p relative "$@"; }
 
   chezmoi_reminder_precmd() {
     local changed
     changed="$(chezmoi status 2>/dev/null | wc -l | awk '{print $1}')"
     [[ "$changed" == "0" ]] && return
-    print -P "%F{173}%B${changed} changed dotfiles — cz-changed | cz-diff | cz-save%b%f"
+    print -P "%F{173}%B${changed} changed dotfiles, chezmoi is out of date%b%f"
   }
   add-zsh-hook precmd chezmoi_reminder_precmd
 fi
@@ -232,7 +221,42 @@ export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
 
-# Claude Code Foundry config lives in ~/.zshrc.work, sourced above
+# Claude Code mode toggle: 'personal' (own Anthropic account) vs 'foundry'
+# (Akamai gateway). Session-only - resets to foundry on every new shell.
+# Foundry credentials live in ~/.zshrc.work (not synced to dotfiles repo).
+claude-mode() {
+  case "$1" in
+    foundry)
+      if [[ -z "$CLAUDE_FOUNDRY_API_KEY" ]]; then
+        echo "claude-mode: foundry credentials not set (missing ~/.zshrc.work)" >&2
+        return 1
+      fi
+      export CLAUDE_CODE_USE_FOUNDRY=1
+      export ANTHROPIC_FOUNDRY_API_KEY="$CLAUDE_FOUNDRY_API_KEY"
+      export ANTHROPIC_FOUNDRY_BASE_URL="$CLAUDE_FOUNDRY_BASE_URL"
+      export ANTHROPIC_CUSTOM_HEADERS="$CLAUDE_FOUNDRY_HEADERS"
+      echo "claude-mode: foundry"
+      ;;
+    personal)
+      unset CLAUDE_CODE_USE_FOUNDRY ANTHROPIC_FOUNDRY_API_KEY ANTHROPIC_FOUNDRY_BASE_URL ANTHROPIC_CUSTOM_HEADERS
+      echo "claude-mode: personal"
+      ;;
+    "")
+      if [[ -n "$CLAUDE_CODE_USE_FOUNDRY" ]]; then
+        echo "claude-mode: foundry"
+      else
+        echo "claude-mode: personal"
+      fi
+      ;;
+    *)
+      echo "usage: claude-mode [personal|foundry]" >&2
+      return 1
+      ;;
+  esac
+}
+
+# Default to foundry on shell startup, if credentials are available
+[[ -n "$CLAUDE_FOUNDRY_API_KEY" ]] && claude-mode foundry >/dev/null
 # Homebrew curl must come before /usr/local/bin/curl-config (a root-owned 2020
 # system binary pointing to /usr/local/include, which is permission-denied).
 # Without this, native gem extensions like ovirt-engine-sdk fail to compile.

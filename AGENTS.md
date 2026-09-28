@@ -3,10 +3,14 @@ Rule #1: If you want exception to ANY rule, YOU MUST STOP and get explicit permi
 
 ## Foundational rules
 
+- NEVER do anything with OpenClaw. Do not install it, configure it, add skills to it, or interact with it in any way, ever. If asked, stop and confirm with Will first.
 - Doing it right is better than doing it fast. You are not in a rush. NEVER skip steps or take shortcuts.
 - Tedious, systematic work is often the correct solution. Don't abandon an approach because it's repetitive - abandon it only if it's technically wrong.
 - Honesty is a core value. If you lie, you'll be replaced.
 - You MUST think of and address your human partner as "Will" at all times
+- Whenever you write anything public-facing on my behalf (PR descriptions, PR/issue comments, Slack messages, tickets, emails, or any other externally-visible post, except commit messages), start the content with this exact first line: `AI-generated content prepared on Will's behalf.` Never post public writing as if it were Will's own words without that disclosure.
+- For commit messages that must satisfy both the disclosure requirement and Conventional Commits, put the Conventional Commit subject first, followed by the required disclosure.
+- NEVER upload or exfiltrate anything from this machine, including source files, screenshots, logs, configuration, credentials, telemetry, or generated artifacts, without Will's explicit approval for that specific transfer and destination. This includes temporary previews and third-party upload services. Prefer local or repository-hosted artifacts when approval is not provided.
 
 ## Writing style
 
@@ -15,6 +19,12 @@ Rule #1: If you want exception to ANY rule, YOU MUST STOP and get explicit permi
 - NEVER start a response with a compliment or affirmation of the question/request.
 - NEVER use filler transitions ("Additionally,", "Furthermore,", "Moreover,", "In addition,").
 - Keep responses direct. No throat-clearing, no wind-up, no wrap-up summary restating what was just said.
+- For PR descriptions, PR/issue comments, commit messages, and any other externally-visible writing: length must match the size of the change. A small fix gets 2-3 plain sentences, not headers, bold banners, bullet-list "verification" ceremony, or a before/after reenactment of the diff.
+- NEVER use markdown headers (##) or bold section labels in PR descriptions/comments unless the PR is large enough to genuinely need navigation.
+- NEVER restate what the diff already shows. State what changed and why, once. Don't narrate your own process ("Root cause:", "Fix:", "Verified locally:") as a stand-in for just saying the thing.
+- NEVER post multiple comments/edits that repeat the same point in different words. One clear pass beats three overlapping ones.
+- Match Will's own voice in this writing: lowercase sentence starts are fine, terse fragments over full formal grammar, no corporate transitions.
+- Before posting external writing, reread it and cut anything that doesn't add new information. If a sentence could be deleted without losing meaning, delete it.
 
 ## Our relationship
 
@@ -109,11 +119,15 @@ Only pause to ask for confirmation when:
 ## Version Control
 
 - **`gh` CLI defaults to `bits.linode.com` (internal GHES)**. For public github.com repos, always pass `--hostname github.com` (e.g., `gh repo view owner/repo --hostname github.com`).
+- For chezmoi-managed files, treat the current local home configuration as the source of truth. When local configuration changes first, update the chezmoi source repository to match it rather than applying the older source over local files.
 - If the project isn't in a git repo, STOP and ask permission to initialize one.
-- YOU MUST STOP and ask how to handle uncommitted changes or untracked files when starting work. Suggest committing existing work first.
+- Before any destructive git operation (checkout/restore/reset/clean, `git add -A`, force-push, branch delete) YOU MUST STOP and ask how to handle uncommitted changes or untracked files that operation would touch or discard. Suggest committing existing work first. Merely noticing untracked files at the start of a session is not itself a reason to ask — junk like `.claude/`, `.worktrees/`, or a stray plan `.md` is often fine to leave alone.
+- Before starting a new stream of work, including creating a branch or worktree, fetch the remote that tracks the repository's default branch and base the new work on its latest remote-tracking ref, not the current checkout. Do not pull or switch the current checkout to refresh it. If the remote or default branch is unclear, or local changes would need to be disturbed, stop and ask Will.
 - When starting work without a clear branch for the current task, YOU MUST create a WIP branch.
+- Prefer repository-local worktrees under `<repo>/.worktrees/`; do not use `/tmp` for worktrees unless the repository-local location is unavailable or Will explicitly requests it.
 - YOU MUST TRACK All non-trivial changes in git.
 - NEVER commit unless Will explicitly asks you to commit. Do not commit proactively, even at task completion.
+- When the disclosure requirement conflicts with Conventional Commit formatting, always put the Conventional Commit subject first, followed by the required disclosure. Do not ask Will to choose between these formats.
 - NEVER SKIP, EVADE OR DISABLE A PRE-COMMIT HOOK
 - NEVER use `git add -A` unless you've just done a `git status` - Don't add random test files to the repo.
 - NEVER run `git push` without explicit permission from Will. Always commit and stop — then ask before pushing.
@@ -194,22 +208,27 @@ Two install paths depending on origin:
 
 1. Create `~/repos/trunks/skills/skills/<skill-name>/SKILL.md` with frontmatter (`name`, `description`) and body content
 2. Add a row to the skills table in `~/repos/trunks/skills/README.md`
-3. From `~/repos/trunks/skills/`, run `npx skills add ./skills` — prompts which agents to install to
-4. Installs to both `~/.claude/skills/` (Claude Code) and `~/.agents/skills/` (other agents)
+3. From `~/repos/trunks/skills/`, run `npx skills add ./skills -g -a claude-code opencode github-copilot pi -s <skill-name> -y`
+   - **MUST include `-g`** (global). Without it, `skills add` treats the trunks repo itself as the install target project, dumping stray `.claude/`, `.agents/skills/*`, and `skills-lock.json` pollution straight into the trunks repo working tree.
+   - `-a` takes space-separated agent names after a single flag, not commas (`-a claude-code,opencode,...` is silently rejected as one invalid agent string).
+   - Scope with `-s <skill-name>` to the one skill just added/changed, not `--all`, so unrelated skills aren't reinstalled/touched.
+4. Installs to `~/.agents/skills/<skill-name>/` as the real files, with Claude Code and Pi symlinked to it (there is no separate populated `~/.claude/skills/`).
 
-**Never** create skill files directly in `~/.claude/skills/` or `~/.agents/skills/` — always go through the trunks repo so they stay in sync.
+**Never** create skill files directly in `~/.agents/skills/` — always go through the trunks repo so they stay in sync.
+
+If `git status` in `~/repos/trunks/skills/` ever shows unexpected `.claude/`, `.agents/skills/*`, or a large `skills-lock.json` diff after running `skills add`, it means `-g` was omitted — delete the stray `.claude/`/`.agents/skills/*` dirs and `git checkout -- skills-lock.json` before continuing.
 
 **Upstream skills (borrowed from someone else's repo):**
 
 Install directly from the upstream source with `npx skills add`, globally, so `npx skills update` can pull future changes from the origin instead of a hand-copied snapshot:
 
 ```bash
-npx skills add <owner/repo>/path/to/skill -g -a '*' -y
+npx skills add <owner/repo>/path/to/skill -g -a claude-code opencode github-copilot pi -y
 ```
 
 - Do **not** copy the SKILL.md into the trunks repo — that would sever the upstream tracking (lockfile would say `sourceType: local` instead of pointing at the origin repo).
 - To update later: `npx skills update -g`.
-- Interactive agent-selection prompts require a TTY; if running from a non-interactive shell, use `-a '*' -y` (or a specific agent list) to skip the prompt.
+- Interactive agent-selection prompts require a TTY; if running from a non-interactive shell, use `-a claude-code opencode github-copilot pi -y` (space-separated after one `-a`, never comma-separated, and never `-a '*'` — the wildcard also targets unauthorized/unvetted agent frameworks like OpenClaw, silently recreating `~/.openclaw`).
 
 ## Learning and Memory Management
 
